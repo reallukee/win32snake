@@ -1,0 +1,27 @@
+# Visual Studio
+.vs/
+ipch/
+
+*.vcxproj.user
+*.aps
+
+# Binary (Windows)
+*.exe
+*.dll
+*.lib
+*.obj
+*.pdb
+*.exp
+
+# Compilation
+[Bb]in/
+[Oo]bj/
+
+# Windows
+[Dd]esktop.ini
+
+# macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+._*
