@@ -21,8 +21,8 @@
   <ItemGroup>
     <ClInclude Include="header.h" />
     <ClInclude Include="main.h" />
-    <ClInclude Include="resource.h" />
     <ClInclude Include="game.h" />
+    <ClInclude Include="resource.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.c" />
