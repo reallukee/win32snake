@@ -137,20 +137,6 @@ LRESULT CALLBACK WndProc(
 
     break;
 
-    case WM_TIMER:
-    {
-        BOOL moveSnakeResult = MoveSnake();
-
-        if (!moveSnakeResult)
-        {
-            GameOver(hWnd);
-        }
-
-        InvalidateRect(hWnd, NULL, TRUE);
-    }
-
-    break;
-
     case WM_PAINT:
     {
         PAINTSTRUCT lpPaint;

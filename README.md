@@ -21,8 +21,7 @@
 # Requisiti
 
 * Windows 10+
-* Microsoft Visual C++ Redistributable 2015-2022 x86
-* Microsoft Visual C++ Redistributable 2015-2022 x64
+* Microsoft Visual C++ Redistributable 2015-2022
 
 
 

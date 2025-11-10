@@ -3,7 +3,6 @@
 
 #include "header.h"
 
-#define TIMER_ID            1
 #define TIMER_INTERVAL      100
 
 #define CELL_WIDTH          25
@@ -15,17 +14,29 @@
 
 #define SNAKE_MAX_LENGTH    COLS_COUNT * ROWS_COUNT
 
+#define TOROIDAL_FIELD      TRUE
+
 static BOOL game;
 
-POINT snake[SNAKE_MAX_LENGTH]; int snakeLength;
+POINT* snake;
+size_t snakeCapacity;
+size_t snakeLength;
 POINT snakeDirection;
 POINT snakeFood;
+
+void TimerProc(
+    HWND hwnd,
+    UINT uMsg,
+    UINT_PTR idEvent,
+    DWORD dwTime);
 
 void InitGame(HWND hWnd);
 void StartGame(HWND hWnd);
 void GameOver(HWND hWnd);
 
-void HandleInput(HWND hWnd, WPARAM wParam);
+void HandleInput(
+    HWND hWnd,
+    WPARAM wParam);
 
 void GenerateSnake();
 void GenerateSnakeFood();

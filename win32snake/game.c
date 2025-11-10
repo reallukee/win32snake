@@ -1,7 +1,37 @@
 #include "game.h"
 
+void TimerProc(
+    HWND hWnd,
+    UINT uMsg,
+    UINT_PTR idEvent,
+    DWORD dwTime)
+{
+    BOOL moveSnakeResult = MoveSnake();
+
+    if (!moveSnakeResult)
+    {
+        GameOver(hWnd);
+    }
+
+    InvalidateRect(hWnd, NULL, TRUE);
+}
+
+
+
 void InitGame(HWND hWnd)
 {
+    if (snake == NULL)
+    {
+        snake = (POINT*)calloc(SNAKE_MAX_LENGTH, sizeof(POINT));
+
+        if (snake == NULL)
+        {
+            PostMessage(hWnd, WM_CLOSE, 0, 0);
+        }
+
+        snakeCapacity = SNAKE_MAX_LENGTH;
+    }
+
     unsigned seed = (unsigned)time(NULL);
 
     srand(seed);
@@ -17,14 +47,14 @@ void InitGame(HWND hWnd)
 
 void StartGame(HWND hWnd)
 {
-    SetTimer(hWnd, TIMER_ID, TIMER_INTERVAL, NULL);
+    SetTimer(hWnd, 1, TIMER_INTERVAL, TimerProc);
 
     game = TRUE;
 }
 
 void GameOver(HWND hWnd)
 {
-    KillTimer(hWnd, TIMER_ID);
+    KillTimer(hWnd, 1);
 
     game = FALSE;
 
@@ -37,14 +67,16 @@ void GameOver(HWND hWnd)
 
 
 
-void HandleInput(HWND hWnd, WPARAM wParam)
+void HandleInput(
+    HWND hWnd,
+    WPARAM wParam)
 {
     switch (wParam)
     {
     case VK_UP:
     case 'W':
     case 'w':
-        if (snakeDirection.y != 1)
+        if (snakeLength == 1 || snakeDirection.y != 1)
         {
             snakeDirection = (POINT){
                 .x = 0,
@@ -62,7 +94,7 @@ void HandleInput(HWND hWnd, WPARAM wParam)
     case VK_DOWN:
     case 'S':
     case 's':
-        if (snakeDirection.y != -1)
+        if (snakeLength == 1 || snakeDirection.y != -1)
         {
             snakeDirection = (POINT){
                 .x = 0,
@@ -80,7 +112,7 @@ void HandleInput(HWND hWnd, WPARAM wParam)
     case VK_LEFT:
     case 'A':
     case 'a':
-        if (snakeDirection.x != 1)
+        if (snakeLength == 1 || snakeDirection.x != 1)
         {
             snakeDirection = (POINT){
                 .x = -1,
@@ -98,7 +130,7 @@ void HandleInput(HWND hWnd, WPARAM wParam)
     case VK_RIGHT:
     case 'D':
     case 'd':
-        if (snakeDirection.x != -1)
+        if (snakeLength == 1 || snakeDirection.x != -1)
         {
             snakeDirection = (POINT){
                 .x = 1,
@@ -170,27 +202,13 @@ void DrawField(HDC hDC)
 
             HBRUSH hbr;
 
-            if (y % 2 == 0)
+            if ((x + y) % 2 == 0)
             {
-                if (x % 2 == 0)
-                {
-                    hbr = CreateSolidBrush(RGB(125, 250, 0));
-                }
-                else
-                {
-                    hbr = CreateSolidBrush(RGB(175, 255, 45));
-                }
+                hbr = CreateSolidBrush(RGB(125, 250, 0));
             }
             else
             {
-                if (x % 2 == 0)
-                {
-                    hbr = CreateSolidBrush(RGB(175, 255, 45));
-                }
-                else
-                {
-                    hbr = CreateSolidBrush(RGB(125, 250, 0));
-                }
+                hbr = CreateSolidBrush(RGB(175, 255, 45));
             }
 
             FillRect(hDC, &lprc, hbr);
@@ -255,24 +273,37 @@ BOOL MoveSnake()
         .y = snakeHead.y + snakeDirection.y,
     };
 
-    if (newSnakeHead.x < 0)
+    if (TOROIDAL_FIELD)
     {
-        newSnakeHead.x = COLS_COUNT - 1;
-    }
+        if (newSnakeHead.x < 0)
+        {
+            newSnakeHead.x = COLS_COUNT - 1;
+        }
 
-    if (newSnakeHead.y < 0)
-    {
-        newSnakeHead.y = ROWS_COUNT - 1;
-    }
+        if (newSnakeHead.y < 0)
+        {
+            newSnakeHead.y = ROWS_COUNT - 1;
+        }
 
-    if (newSnakeHead.x > COLS_COUNT - 1)
-    {
-        newSnakeHead.x = 0;
-    }
+        if (newSnakeHead.x > COLS_COUNT - 1)
+        {
+            newSnakeHead.x = 0;
+        }
 
-    if (newSnakeHead.y > ROWS_COUNT - 1)
+        if (newSnakeHead.y > ROWS_COUNT - 1)
+        {
+            newSnakeHead.y = 0;
+        }
+    }
+    else
     {
-        newSnakeHead.y = 0;
+        if (newSnakeHead.x < 0 ||
+            newSnakeHead.y < 0 ||
+            newSnakeHead.x > COLS_COUNT - 1 ||
+            newSnakeHead.y > ROWS_COUNT - 1)
+        {
+            return FALSE;
+        }
     }
 
     for (int i = 1; i < snakeLength; i++)
@@ -285,7 +316,7 @@ BOOL MoveSnake()
 
     POINT snakeTail = snake[snakeLength - 1];
 
-    for (int i = snakeLength - 1; i > 0; i--)
+    for (size_t i = snakeLength - 1; i > 0; i--)
     {
         snake[i] = snake[i - 1];
     }
