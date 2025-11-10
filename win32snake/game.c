@@ -1,6 +1,6 @@
 #include "game.h"
 
-void TimerProc(
+void CALLBACK TimerProc(
     HWND hWnd,
     UINT uMsg,
     UINT_PTR idEvent,
@@ -175,7 +175,7 @@ void GenerateSnakeFood()
             .y = rand() % ROWS_COUNT,
         };
 
-        for (int i = 0; i < snakeLength; i++)
+        for (size_t i = 0; i < snakeLength; i++)
         {
             if (snake[i].x == snakeFood.x && snake[i].y == snakeFood.y)
             {
@@ -220,7 +220,7 @@ void DrawField(HDC hDC)
 
 void DrawSnake(HDC hDC)
 {
-    for (int i = 0; i < snakeLength; i++)
+    for (size_t i = 0; i < snakeLength; i++)
     {
         RECT lprc = {
             snake[i].x * CELL_WIDTH,
@@ -306,7 +306,7 @@ BOOL MoveSnake()
         }
     }
 
-    for (int i = 1; i < snakeLength; i++)
+    for (size_t i = 1; i < snakeLength; i++)
     {
         if (snake[i].x == newSnakeHead.x && snake[i].y == newSnakeHead.y)
         {

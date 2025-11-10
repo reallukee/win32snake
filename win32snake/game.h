@@ -24,7 +24,7 @@ size_t snakeLength;
 POINT snakeDirection;
 POINT snakeFood;
 
-void TimerProc(
+void CALLBACK TimerProc(
     HWND hwnd,
     UINT uMsg,
     UINT_PTR idEvent,
